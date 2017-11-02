@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
-import {Card, Button} from './';
+import {Button, Card} from './';
 
 const CardDeleteLayout = styled.div`
 	flex: 1;

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
-import {Select, CardEdit} from './';
+import {CardEdit, Select} from './';
 
 const CardLayout = styled.div`
 	position: relative;
