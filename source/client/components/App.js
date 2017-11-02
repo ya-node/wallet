@@ -4,14 +4,7 @@ import {injectGlobal} from 'emotion';
 import CardInfo from 'card-info';
 import axios from 'axios';
 
-import {
-	CardsBar,
-	Header,
-	History,
-	Prepaid,
-	MobilePayment,
-	Withdraw
-} from './';
+import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw} from './';
 
 import './fonts.css';
 

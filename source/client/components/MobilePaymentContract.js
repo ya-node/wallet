@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 import axios from 'axios';
 
-import {Island, Title, Button, Input} from './';
+import {Button, Input, Island, Title} from './';
 
 const MobilePaymentLayout = styled(Island)`
 	width: 440px;

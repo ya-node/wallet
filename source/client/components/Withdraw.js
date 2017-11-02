@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 import axios from 'axios';
 
-import {Card, Title, Button, Island, Input} from './';
+import {Button, Card, Input, Island, Title} from './';
 
 const WithdrawTitle = styled(Title)`
 	text-align: center;
