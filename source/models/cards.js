@@ -18,7 +18,8 @@ class Cards extends DbModel {
 	async create(card) {
 		const isDataValid = card
 			&& Object.prototype.hasOwnProperty.call(card, 'cardNumber')
-			&& Object.prototype.hasOwnProperty.call(card, 'balance');
+			&& Object.prototype.hasOwnProperty.call(card, 'balance')
+			&& Object.prototype.hasOwnProperty.call(card, 'userId');
 
 		if (isDataValid) {
 			const newCard = Object.assign({}, card, {

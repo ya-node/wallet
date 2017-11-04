@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 import {injectGlobal} from 'emotion';
 import CardInfo from 'card-info';
 import axios from 'axios';
 
-import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw} from './';
+import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw, Login} from './';
 
 import './fonts.css';
 
@@ -49,6 +50,7 @@ class App extends Component {
 	 * @returns {Object[]}
 	 */
 	static prepareCardsData(cards) {
+		if (!cards) return [];
 		return cards.map((card) => {
 			const cardInfo = new CardInfo(card.cardNumber, {
 				banksLogosPath: '/assets/',
@@ -169,13 +171,39 @@ class App extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
+		const {data} = this.props;
 		const {cardsList, activeCardIndex, cardHistory, isCardsEditable, isCardRemoving, removeCardId} = this.state;
-		const activeCard = cardsList[activeCardIndex];
+		const activeCard = cardsList[activeCardIndex] || 0;
 
 		const inactiveCardsList = cardsList.filter((card, index) => (index === activeCardIndex ? false : card));
 		const filteredHistory = cardHistory.filter((data) => {
 			return Number(data.cardId) == activeCard.id;
 		});
+
+		if (!data.user.isAuthorized) {
+			return (
+				<Login />
+			);
+		}
+
+		let prepaid,
+			mobilepayment,
+			withdraw;
+
+		if (cardsList.length) {
+			mobilepayment = <MobilePayment activeCard={activeCard} onTransaction={() => this.onTransaction()} />;
+		}
+		if (cardsList.length > 1) {
+			prepaid = <Prepaid
+						activeCard={activeCard}
+						inactiveCardsList={inactiveCardsList}
+						onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
+						onTransaction={() => this.onTransaction()} />;
+			withdraw = <Withdraw
+						activeCard={activeCard}
+						inactiveCardsList={inactiveCardsList}
+						onTransaction={() => this.onTransaction()} />;
+		}
 
 		return (
 			<Wallet>
@@ -189,24 +217,27 @@ class App extends Component {
 					deleteCard={(index) => this.deleteCard(index)}
 					onChangeBarMode={(event, index) => this.onChangeBarMode(event, index)} />
 				<CardPane>
-					<Header activeCard={activeCard} />
+					<Header activeCard={activeCard} user={data.user}/>
 					<Workspace>
 						<History cardHistory={filteredHistory} />
-						<Prepaid
-							activeCard={activeCard}
-							inactiveCardsList={inactiveCardsList}
-							onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
-							onTransaction={() => this.onTransaction()} />
-						<MobilePayment activeCard={activeCard} onTransaction={() => this.onTransaction()} />
-						<Withdraw
-							activeCard={activeCard}
-							inactiveCardsList={inactiveCardsList}
-							onTransaction={() => this.onTransaction()} />
+						{prepaid}
+						{mobilepayment}
+						{withdraw}
 					</Workspace>
 				</CardPane>
 			</Wallet>
 		);
 	}
 }
+
+App.propTypes = {
+	data: PropTypes.shape({
+		user: PropTypes.object
+	})
+};
+
+App.defaultProps = {
+	data: {}
+};
 
 export default App;

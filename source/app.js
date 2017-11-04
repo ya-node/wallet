@@ -9,6 +9,9 @@ const serve = require('koa-static');
 const router = require('koa-router')();
 const bodyParser = require('koa-bodyparser')();
 const config = require('config');
+const session = require('koa-session')
+const passport = require('koa-passport');
+const YandexStrategy = require('passport-yandex').Strategy;
 
 const logger = require('libs/logger')('app');
 
@@ -28,6 +31,7 @@ const errorController = require('./controllers/error');
 const ApplicationError = require('libs/application-error');
 const CardsModel = require('source/models/cards');
 const TransactionsModel = require('source/models/transactions');
+const UsersModel = require('source/models/users');
 
 const getTransactionsController = require('./controllers/transactions/get-transactions');
 
@@ -44,12 +48,19 @@ function getView(viewId) {
 }
 
 async function getData(ctx) {
-	const user = {
-		login: 'samuel_johnson',
-		name: 'Samuel Johnson'
-	};
-	const cards = await ctx.cardsModel.getAll();
-	const transactions = await ctx.transactionsModel.getAll();
+	let user = [],
+		cards = [],
+		transactions = [];
+	if (ctx.session.passport) {
+		user = await ctx.usersModel.getById(ctx.session.passport.user);
+		user.isAuthorized = true;
+		cards = await ctx.cardsModel.getAllFromUser(user.id);
+		transactions = await ctx.transactionsModel.getAll();
+	} else {
+		user.login = 'none';
+		user.name = 'none';
+		user.isAuthorized = false;
+	}
 
 	return {
 		user,
@@ -57,6 +68,48 @@ async function getData(ctx) {
 		transactions
 	};
 }
+
+app.keys = ['secret-3hfc34875cb238d2nd3d2'];
+app.use(session({}, app));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new YandexStrategy({
+	clientID: "1c74c610b26045a7af6a9242a2fe0cb7",
+	clientSecret: "78778830460146448e7f9e510f1da1c8",
+	//callbackURL:  "https://localhost:3000/auth",
+	//passReqToCallback: true
+}, async function (accessToken, refreshToken, profile, next) {
+
+	const usersModel = new UsersModel();
+	const user = await usersModel.getByYandexId(profile.id);
+	let id;
+
+	if (user && user.id) {
+		id = user.id;
+	} else {
+		const userParam = {
+			login: profile._json.login,
+			name: profile._json.real_name,
+			yandex: profile.id,
+		};
+		if (!profile._json.is_avatar_empty) {
+			userParam.avatar = 'https://avatars.yandex.net/get-yapic/'+profile._json.default_avatar_id+'/islands-200/';
+		}
+
+		const newUser = await usersModel.create(userParam);
+		id = newUser.id;
+	}
+
+	return next(false, id);
+}));
+
+passport.serializeUser(function(user, done) {
+	done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+	done(null, obj);
+});
 
 // Сохраним параметр id в ctx.params.id
 router.param('id', (id, ctx, next) => next());
@@ -68,6 +121,14 @@ router.get('/', async (ctx) => {
 
 	ctx.body = indexViewHtml;
 });
+
+router.get('/auth/yandex', passport.authenticate('yandex'));
+router.get('/auth',
+	passport.authenticate('yandex', {
+		successRedirect: '/',
+		failureRedirect: '/'
+	})
+);
 
 router.get('/cards/', getCardsController);
 router.post('/cards/', createCardController);
@@ -107,10 +168,10 @@ app.use(async (ctx, next) => {
 app.use(async (ctx, next) => {
 	ctx.cardsModel = new CardsModel();
 	ctx.transactionsModel = new TransactionsModel();
+	ctx.usersModel = new UsersModel();
 
 	await next();
 });
-
 
 app.use(bodyParser);
 app.use(router.routes());

@@ -59,7 +59,6 @@ const RepeatPayment = styled.button`
 	font-size: 13px;
 	background-color: rgba(0, 0, 0, 0.08);
 	height: 42px;
-	display: flex;
 	justify-content: center;
 	align-items: center;
 	border: none;
@@ -69,6 +68,7 @@ const RepeatPayment = styled.button`
 	bottom: 0;
 	cursor: pointer;
 	text-transform: uppercase;
+	text-align: center;
 `;
 
 const MobilePaymentSuccess = ({transaction, repeatPayment}) => {
