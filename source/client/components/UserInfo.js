@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'emotion/react';
+import {Button} from './';
 
 const User = styled.div`
 	display: flex;
@@ -15,9 +17,29 @@ const Avatar = styled.img`
 	margin-right: 10px;
 `;
 
-export default () => (
-	<User>
-		<Avatar src='/assets/avatar.png' />
-		Samuel Johnson
+const UserInfo = ({user}) => {
+	if (user.login) {
+		return (
+			<User>
+			<Avatar src={user.avatar || '/assets/avatar.png'} />
+		{user.name || user.login}
 	</User>
-);
+	);
+	}
+
+	return <Button>Войти</Button>;
+};
+
+UserInfo.propTypes = {
+	user: PropTypes.shape({
+		login: PropTypes.string,
+		name: PropTypes.string,
+		avatar: PropTypes.string,
+	})
+};
+
+UserInfo.defaultProps = {
+	user: {}
+};
+
+export default UserInfo;

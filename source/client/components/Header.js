@@ -25,8 +25,8 @@ const BalanceSum = styled.span`
 const Header = ({activeCard, user}) => (
 	<HeaderLayout>
 		<Balance>
-			{`${activeCard.bankName}: `}
-			<BalanceSum>{`${activeCard.balance} ₽`}</BalanceSum>
+			{`${activeCard.bankName?activeCard.bankName:'Карта не выбрана'}: `}
+			<BalanceSum>{`${activeCard.balance?activeCard.balance:0} ₽`}</BalanceSum>
 		</Balance>
 		<UserInfo user={user} />
 	</HeaderLayout>
@@ -39,7 +39,8 @@ Header.propTypes = {
 	}),
 	user: PropTypes.shape({
 		login: PropTypes.string.isRequired,
-		name: PropTypes.string.isRequired
+		name: PropTypes.string.isRequired,
+		avatar: PropTypes.string,
 	})
 };
 

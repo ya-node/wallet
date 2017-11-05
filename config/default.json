@@ -3,7 +3,7 @@
 	"port": 3000
   },
   "mongo": {
-	"uri": "mongodb://localhost/school-wallet"
+	"uri": "mongodb://dbuser:1q2w3e@ds245885.mlab.com:45885/ya-school"
   },
   "isHttps": false
 }
