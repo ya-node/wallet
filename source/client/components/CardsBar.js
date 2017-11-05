@@ -41,7 +41,7 @@ const Footer = styled.footer`
 
 const CardsBar = ({
 	activeCardIndex, cardsList, onCardChange, onEditChange, isCardsEditable, isCardRemoving, onChangeBarMode,
-	removeCardId, deleteCard
+	removeCardId, deleteCard, showCardModal, addCard
 }) => {
 	const onCardClick = (index) => {
 		onCardChange && onCardChange(index);
@@ -75,7 +75,7 @@ const CardsBar = ({
 							onClick={() => onCardClick(index)} />
 					))
 				}
-				<Card type='new' />
+				<Card type='new' addCard={addCard} showCardModal={showCardModal} />
 			</CardsList>
 			<Footer>Yamoney Node School</Footer>
 		</Layout>
@@ -90,7 +90,9 @@ CardsBar.propTypes = {
 	isCardsEditable: PropTypes.bool.isRequired,
 	isCardRemoving: PropTypes.bool.isRequired,
 	deleteCard: PropTypes.func.isRequired,
-	onChangeBarMode: PropTypes.func.isRequired
+	onChangeBarMode: PropTypes.func.isRequired,
+	showCardModal: PropTypes.func.isRequired,
+	addCard: PropTypes.func.isRequired
 };
 
 export default CardsBar;
