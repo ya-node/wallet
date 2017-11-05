@@ -1,6 +1,7 @@
 import React, {Component}  from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
+import axios from 'axios';
 import {Input, Button} from './';
 
 const Layout = styled.div`
@@ -148,7 +149,8 @@ class CardAdd extends Component {
 
 		this.state = {
 			cardNumber: '',
-			balance: ''
+			balance: '',
+			userId: props.user.id
 		};
 	}
 
@@ -168,9 +170,30 @@ class CardAdd extends Component {
 		});
 	}
 
+	/**
+	 * Отправка формы
+	 * @param {Event} event событие отправки формы
+	 */
+	onSubmitForm(event) {
+		if (event) {
+			event.preventDefault();
+		}
+
+		const {cardNumber, balance, userId} = this.state;
+
+		axios
+			.post('/cards/', {cardNumber, balance, userId})
+			.then((response) => {
+				console.log('response', response);
+			})
+			.catch((error) => {
+				console.log('error', error);
+			});
+	}
+
 	render() {
-		const {user, isCardAdding, hideCardModal} = this.props;
-		const {cardNumber, balance} = this.state;
+		const {isCardAdding, hideCardModal} = this.props;
+		const {cardNumber, balance, userId} = this.state;
 
 		if (isCardAdding) {
 			return (
@@ -185,7 +208,7 @@ class CardAdd extends Component {
 
 							<Title>Добавить новую карту</Title>
 
-							<Form action='#' method='#'>
+							<Form onSubmit={(event) => this.onSubmitForm(event)}>
 								<NumInput
 									name='cardNumber'
 									placeholder='Номер карты'
@@ -198,7 +221,7 @@ class CardAdd extends Component {
 									value={balance}
 									onChange={(event) => this.onChangeInputValue(event)} />
 
-								<UserInput type='hidden' name='userId' value={user.id} />
+								<UserInput type='hidden' name='userId' value={userId} />
 
 								<Submit type='submit'>Добавить карту</Submit>
 							</Form>
