@@ -23,6 +23,7 @@ const createCardController = require('./controllers/cards/create');
 const deleteCardController = require('./controllers/cards/delete');
 const getTransactionController = require('./controllers/transactions/get');
 const createTransactionsController = require('./controllers/transactions/create');
+const getTransactionByFileController = require('./controllers/transactions/file-transactions');
 const cardToCard = require('./controllers/cards/card-to-card');
 const cardToMobile = require('./controllers/cards/card-to-mobile');
 const mobileToCard = require('./controllers/cards/mobile-to-card');
@@ -132,6 +133,11 @@ router.get('/auth',
 	})
 );
 
+router.get('/logout',async (ctx) => {
+	ctx.session.passport = null;
+	ctx.body = 'ok';
+});
+
 router.get('/bot/:id', loginBotController);
 
 router.get('/cards/', getCardsController);
@@ -140,6 +146,7 @@ router.delete('/cards/:id', deleteCardController);
 
 router.get('/cards/:id/transactions/', getTransactionController);
 router.post('/cards/:id/transactions/', createTransactionsController);
+router.get('/cards/:id/file-transactions/', getTransactionByFileController);
 
 router.post('/cards/:id/transfer', cardToCard);
 router.post('/cards/:id/pay', cardToMobile);

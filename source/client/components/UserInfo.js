@@ -25,6 +25,13 @@ const Telegram = styled.img`
 	cursor: pointer;
 `;
 
+const Logout = styled.img`
+	width: 42px;
+	height: 42px;
+	margin-right: 10px;
+	cursor: pointer;
+`;
+
 
 const UserInfo = ({user}) => {
 
@@ -38,12 +45,22 @@ const UserInfo = ({user}) => {
 			alert(`К сожалению данный сервис временно недоступен.`);
 		});
 	}
+	const onLogoutBtnClick = function() {
+		axios.get(`/logout`)
+			.then((response) => {
+				location.reload();
+			});
+	}
 
 	if (user.login) {
 		return (
 			<User>
+				<Logout
+					src={'/assets/logout.png'}
+					onClick={onLogoutBtnClick}
+				/>
 				<Telegram
-					src={user.avatar || '/assets/telegram.svg'}
+					src={'/assets/telegram.svg'}
 					onClick={onTelegramBtnClick}
 				/>
 				<Avatar src={user.avatar || '/assets/avatar.png'} />
