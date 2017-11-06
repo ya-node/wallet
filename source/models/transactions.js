@@ -60,6 +60,22 @@ class Transactions extends DbModel {
   }
 
 	/**
+	 * Получает транзакции по идентификатору карты и дате
+	 * @param {Number} id Идентификатор карты
+	 * @return {Promise.<Object[]>}
+	 */
+	async getByCardToday(id, startDate, endDate) {
+	const item = await this.getFieldsBy({
+		cardId: id,
+		time: {
+			"$gte": startDate,
+			"$lte": endDate,
+		}
+	}, { type: 1, sum: 1, data: 1, time: 1, _id: 0 });
+	return item;
+}
+
+	/**
 	 * Удаление транзакции
 	 */
 	static async remove() {

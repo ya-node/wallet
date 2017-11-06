@@ -101,7 +101,9 @@ class App extends Component {
 			isCardAdding: false,
 			isCardsEditable: false,
 			isOperationConfirm: false,
-			transaction: {}
+			transaction: {},
+			startDate: '',
+			endDate: ''
 		};
 	}
 
@@ -129,7 +131,7 @@ class App extends Component {
 	/**
 	* Функция вызывает при успешной транзакции
 	*/
-	onTransaction() {
+	onTransaction(value) {
 		axios.get('/cards').then(({data}) => {
 			const cardsList = App.prepareCardsData(data);
 			this.setState({cardsList});
@@ -139,6 +141,12 @@ class App extends Component {
 				this.setState({cardHistory});
 			});
 		});
+
+		if (value) {
+			const startDate = value[0];
+			const endDate = value[1];
+			this.setState({startDate, endDate});
+		}
 	}
 
 	/**
@@ -164,7 +172,7 @@ class App extends Component {
 			.then(() => {
 				axios.get('/cards').then(({data}) => {
 					const cardsList = App.prepareCardsData(data);
-					this.setState({cardsList});
+					this.setState({cardsList, activeCardIndex: 0});
 				});
 			});
 	}
@@ -229,7 +237,10 @@ class App extends Component {
 			isCardRemoving,
 			isCardAdding,
 			isOperationConfirm,
-			removeCardId
+			removeCardId,
+			removeCardId,
+			startDate,
+			endDate
 		} = this.state;
 
 		const activeCard = cardsList[activeCardIndex] || 0;
@@ -281,9 +292,15 @@ class App extends Component {
 					showCardModal={() => this.showCardModal()}
 					onChangeBarMode={(event, index) => this.onChangeBarMode(event, index)} />
 				<CardPane>
-					<Header activeCard={activeCard} user={data.user} />
+					<Header activeCard={activeCard} user={data.user} deleteCard={(cardId) => this.deleteCard(cardId)} />
 					<Workspace>
-						<History cardHistory={filteredHistory} />
+						<History
+							cardHistory={filteredHistory}
+							activeCard={activeCard}
+							startDate={startDate}
+							endDate={endDate}
+							onTransaction={(value) => this.onTransaction(value)}
+						/>
 						{prepaid}
 						{mobilepayment}
 						{withdraw}
