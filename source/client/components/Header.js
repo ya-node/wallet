@@ -22,15 +22,20 @@ const BalanceSum = styled.span`
 	font-weight: bold;
 `;
 
-const Header = ({activeCard, user}) => (
-	<HeaderLayout>
-		<Balance>
-			{`${activeCard.bankName?activeCard.bankName:'Карта не выбрана'}: `}
-			<BalanceSum>{`${activeCard.balance?activeCard.balance:0} ₽`}</BalanceSum>
-		</Balance>
-		<UserInfo user={user} />
-	</HeaderLayout>
-);
+const Header = ({activeCard, user}) => {
+	const bankName = activeCard.bankName ? activeCard.bankName :
+		activeCard.number ? activeCard.number : 'Карта не выбрана';
+
+	return (
+		<HeaderLayout>
+			<Balance>
+				{`${bankName}: `}
+				<BalanceSum>{`${activeCard.balance ? activeCard.balance : 0} ₽`}</BalanceSum>
+			</Balance>
+			<UserInfo user={user} />
+		</HeaderLayout>
+	);
+};
 
 Header.propTypes = {
 	activeCard: PropTypes.shape({
