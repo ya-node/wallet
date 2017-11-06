@@ -6,6 +6,7 @@ import CardInfo from 'card-info';
 import axios from 'axios';
 
 import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw, Login, CardAdd} from './';
+import ConfirmOperation from './ConfirmOperation';
 
 import './fonts.css';
 
@@ -99,8 +100,10 @@ class App extends Component {
 			isCardRemoving: false,
 			isCardAdding: false,
 			isCardsEditable: false,
+			isOperationConfirm: false,
+			transaction: {},
 			startDate: '',
-			endDate: '',
+			endDate: ''
 		};
 	}
 
@@ -204,6 +207,20 @@ class App extends Component {
 	}
 
 	/**
+	 * Показать модальное окно для подверждения операции
+	 */
+	showOperationConfirmModal(data) {
+		this.setState({isOperationConfirm: true, transaction: data});
+	}
+
+	/**
+	 * Спрятать модальное окно для подверждения операции
+	 */
+	hideOperationConfirmModal() {
+		this.setState({isOperationConfirm: false});
+	}
+
+	/**
 	 * Рендер компонента
 	 *
 	 * @override
@@ -212,12 +229,15 @@ class App extends Component {
 	render() {
 		const {data} = this.props;
 		const {
+			transaction,
 			cardsList,
 			activeCardIndex,
 			cardHistory,
 			isCardsEditable,
 			isCardRemoving,
 			isCardAdding,
+			isOperationConfirm,
+			removeCardId,
 			removeCardId,
 			startDate,
 			endDate
@@ -241,7 +261,10 @@ class App extends Component {
 			withdraw;
 
 		if (cardsList.length) {
-			mobilepayment = <MobilePayment activeCard={activeCard} onTransaction={() => this.onTransaction()} />;
+			mobilepayment = <MobilePayment
+				activeCard={activeCard}
+				showOperationConfirmModal={(data) => this.showOperationConfirmModal(data)}
+				onTransaction={() => this.onTransaction()} />;
 		}
 		if (cardsList.length > 1) {
 			prepaid = <Prepaid
@@ -288,6 +311,11 @@ class App extends Component {
 					hideCardModal={() => this.hideCardModal()}
 					user={data.user}
 					addCard={(newCard) => this.addCard(newCard)} />
+				<ConfirmOperation
+					transaction={transaction}
+					isOperationConfirm={isOperationConfirm}
+					hideModal={() => this.hideOperationConfirmModal()}
+					user={data.user} />
 			</Wallet>
 		);
 	}

@@ -120,7 +120,11 @@ class MobilePaymentContract extends Component {
 
 		axios
 			.post(`/cards/${activeCard.id}/pay`, {phoneNumber, sum})
-			.then(() => this.props.onPaymentSuccess({sum, phoneNumber, commission}));
+			.then((response) => {
+
+				this.props.showOperationConfirmModal(response.data);
+				//this.props.onPaymentSuccess({sum, phoneNumber, commission});
+			});
 	}
 
 	/**
@@ -185,7 +189,8 @@ MobilePaymentContract.propTypes = {
 	activeCard: PropTypes.shape({
 		id: PropTypes.number
 	}).isRequired,
-	onPaymentSuccess: PropTypes.func.isRequired
+	onPaymentSuccess: PropTypes.func.isRequired,
+	showOperationConfirmModal: PropTypes.func.isRequired
 };
 
 export default MobilePaymentContract;

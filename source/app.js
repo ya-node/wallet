@@ -37,6 +37,7 @@ const UsersModel = require('source/models/users');
 const Bot = require('source/models/bot');
 
 const getTransactionsController = require('./controllers/transactions/get-transactions');
+const confirmTransactionsController = require('./controllers/transactions/confirm-transactions');
 
 const mongoose = require('mongoose');
 mongoose.connect(config.get('mongo.uri'), { useMongoClient: true });
@@ -153,6 +154,7 @@ router.post('/cards/:id/pay', cardToMobile);
 router.post('/cards/:id/fill', mobileToCard);
 
 router.get('/transactions/', getTransactionsController);
+router.post('/transactions/confirm', confirmTransactionsController);
 
 router.all('/error', errorController);
 
