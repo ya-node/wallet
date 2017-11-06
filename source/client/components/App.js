@@ -161,7 +161,7 @@ class App extends Component {
 			.then(() => {
 				axios.get('/cards').then(({data}) => {
 					const cardsList = App.prepareCardsData(data);
-					this.setState({cardsList});
+					this.setState({cardsList, activeCardIndex: 0});
 				});
 			});
 	}
@@ -259,7 +259,7 @@ class App extends Component {
 					showCardModal={() => this.showCardModal()}
 					onChangeBarMode={(event, index) => this.onChangeBarMode(event, index)} />
 				<CardPane>
-					<Header activeCard={activeCard} user={data.user} />
+					<Header activeCard={activeCard} user={data.user} deleteCard={(cardId) => this.deleteCard(cardId)} />
 					<Workspace>
 						<History cardHistory={filteredHistory} />
 						{prepaid}
