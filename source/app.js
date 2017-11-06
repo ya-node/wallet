@@ -17,6 +17,7 @@ const logger = require('libs/logger')('app');
 
 const {renderToStaticMarkup} = require('react-dom/server');
 
+const loginBotController = require('./controllers/bot/login');
 const getCardsController = require('./controllers/cards/get-cards');
 const createCardController = require('./controllers/cards/create');
 const deleteCardController = require('./controllers/cards/delete');
@@ -32,6 +33,7 @@ const ApplicationError = require('libs/application-error');
 const CardsModel = require('source/models/cards');
 const TransactionsModel = require('source/models/transactions');
 const UsersModel = require('source/models/users');
+const Bot = require('source/models/bot');
 
 const getTransactionsController = require('./controllers/transactions/get-transactions');
 
@@ -130,6 +132,8 @@ router.get('/auth',
 	})
 );
 
+router.get('/bot/:id', loginBotController);
+
 router.get('/cards/', getCardsController);
 router.post('/cards/', createCardController);
 router.delete('/cards/:id', deleteCardController);
@@ -169,6 +173,7 @@ app.use(async (ctx, next) => {
 	ctx.cardsModel = new CardsModel();
 	ctx.transactionsModel = new TransactionsModel();
 	ctx.usersModel = new UsersModel();
+	ctx.bot = Bot();
 
 	await next();
 });

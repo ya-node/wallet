@@ -16,6 +16,14 @@ const User = mongoose.model('User', {
     },
     avatar: {
         type: String
+    },
+    token: {
+    	type: String,
+        required: false
+    },
+    chatID: {
+    	type: Number,
+        required: false
     }
 });
 
