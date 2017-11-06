@@ -46,6 +46,12 @@ const NewCardLayout = styled(CardLayout)`
 	background-position: center;
 	box-sizing: border-box;
 	border: 2px dashed rgba(255, 255, 255, 0.2);
+	cursor: pointer;
+	transition: border-color .2s ease;
+	
+	&:hover {
+		border-color: rgba(255, 255, 255, .8);
+	}
 `;
 
 const CardSelect = styled(Select)`
@@ -86,10 +92,10 @@ class Card extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {data, type, active, isSingle, onClick, isCardsEditable, onChangeBarMode} = this.props;
+		const {data, type, active, isSingle, onClick, isCardsEditable, onChangeBarMode, showCardModal} = this.props;
 		if (type === 'new') {
 			return (
-				<NewCardLayout />
+				<NewCardLayout onClick={() => showCardModal()} />
 			);
 		}
 
@@ -143,7 +149,8 @@ Card.propTypes = {
 	isSingle: PropTypes.bool,
 	isCardsEditable: PropTypes.bool,
 	onClick: PropTypes.func,
-	onChangeBarMode: PropTypes.func
+	onChangeBarMode: PropTypes.func,
+	showCardModal: PropTypes.func
 };
 
 export default Card;

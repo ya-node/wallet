@@ -26,7 +26,15 @@ class Cards extends DbModel {
 				id: await this._generateId()
 			});
 
-			await this._insert(newCard);
+			try {
+				await this._insert(newCard);
+			} catch (error) {
+				const status = error.name === 'ValidationError' ? 400 : 500;
+				const message = error.message ? error.message : 'Can not create new card';
+
+				throw new ApplicationError(message, status);
+			}
+
 			return newCard;
 		}
 

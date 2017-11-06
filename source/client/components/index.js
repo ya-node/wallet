@@ -14,4 +14,5 @@ export {default as History} from './History';
 export {default as Header} from './Header';
 export {default as UserInfo} from './UserInfo';
 export {default as Login} from './Login';
+export {default as CardAdd} from './CardAdd';
 export {default as App} from './App';

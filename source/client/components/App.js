@@ -5,7 +5,7 @@ import {injectGlobal} from 'emotion';
 import CardInfo from 'card-info';
 import axios from 'axios';
 
-import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw, Login} from './';
+import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw, Login, CardAdd} from './';
 
 import './fonts.css';
 
@@ -23,6 +23,7 @@ injectGlobal([`
 `]);
 
 const Wallet = styled.div`
+	position: relative;
 	display: flex;
 	min-height: 100%;
 	background-color: #fcfcfc;
@@ -96,6 +97,7 @@ class App extends Component {
 			activeCardIndex: 0,
 			removeCardId: 0,
 			isCardRemoving: false,
+			isCardAdding: false,
 			isCardsEditable: false
 		};
 	}
@@ -165,6 +167,35 @@ class App extends Component {
 	}
 
 	/**
+	 * Добавление новой карты
+	 * @param {Object} data
+	 */
+	addCard(data) {
+		const card = App.prepareCardsData([data]);
+		const {cardsList} = this.state;
+		const newCardsList = [
+			...cardsList,
+			...card
+		];
+
+		this.setState({cardsList: newCardsList});
+	}
+
+	/**
+	 * Показать модальное окно для добавления новой карты
+	 */
+	showCardModal() {
+		this.setState({isCardAdding: true});
+	}
+
+	/**
+	 * Спрятать модальное окно добавления новой карты
+	 */
+	hideCardModal() {
+		this.setState({isCardAdding: false});
+	}
+
+	/**
 	 * Рендер компонента
 	 *
 	 * @override
@@ -172,7 +203,16 @@ class App extends Component {
 	 */
 	render() {
 		const {data} = this.props;
-		const {cardsList, activeCardIndex, cardHistory, isCardsEditable, isCardRemoving, removeCardId} = this.state;
+		const {
+			cardsList,
+			activeCardIndex,
+			cardHistory,
+			isCardsEditable,
+			isCardRemoving,
+			isCardAdding,
+			removeCardId
+		} = this.state;
+
 		const activeCard = cardsList[activeCardIndex] || 0;
 
 		const inactiveCardsList = cardsList.filter((card, index) => (index === activeCardIndex ? false : card));
@@ -195,14 +235,14 @@ class App extends Component {
 		}
 		if (cardsList.length > 1) {
 			prepaid = <Prepaid
-						activeCard={activeCard}
-						inactiveCardsList={inactiveCardsList}
-						onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
-						onTransaction={() => this.onTransaction()} />;
+				activeCard={activeCard}
+				inactiveCardsList={inactiveCardsList}
+				onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
+				onTransaction={() => this.onTransaction()} />;
 			withdraw = <Withdraw
-						activeCard={activeCard}
-						inactiveCardsList={inactiveCardsList}
-						onTransaction={() => this.onTransaction()} />;
+				activeCard={activeCard}
+				inactiveCardsList={inactiveCardsList}
+				onTransaction={() => this.onTransaction()} />;
 		}
 
 		return (
@@ -215,9 +255,11 @@ class App extends Component {
 					isCardsEditable={isCardsEditable}
 					isCardRemoving={isCardRemoving}
 					deleteCard={(index) => this.deleteCard(index)}
+					addCard={() => this.addCard()}
+					showCardModal={() => this.showCardModal()}
 					onChangeBarMode={(event, index) => this.onChangeBarMode(event, index)} />
 				<CardPane>
-					<Header activeCard={activeCard} user={data.user}/>
+					<Header activeCard={activeCard} user={data.user} />
 					<Workspace>
 						<History cardHistory={filteredHistory} />
 						{prepaid}
@@ -225,6 +267,11 @@ class App extends Component {
 						{withdraw}
 					</Workspace>
 				</CardPane>
+				<CardAdd
+					isCardAdding={isCardAdding}
+					hideCardModal={() => this.hideCardModal()}
+					user={data.user}
+					addCard={(newCard) => this.addCard(newCard)} />
 			</Wallet>
 		);
 	}
