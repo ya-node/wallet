@@ -1,1 +1,1 @@
-web: NODE_ENV=secure npm start
+web: NODE_ENV=production npm start
