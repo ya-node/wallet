@@ -31,6 +31,30 @@ class Users extends DbModel {
         return item;
     }
 
+     /**
+     * Получает пользователей по token
+     * @return {Promise.<Object[]>}
+     */
+    async getByToken(token) {
+        const item = await this.getBy({"token": token});
+        return item;
+    }
+
+     /**
+     * Задает пользователю с id значение поля
+	 * @param {Number} id идентификатор пользователя
+	 * @param {Object} fieldName имя поля
+	 * @param {Object} fieldValue значение поля
+     */
+    async updateUserField(userId, fieldName, fieldValue) {
+    	const user = await this.getById(userId);
+		if (!user) {
+			throw new ApplicationError(`User with ID=${userId} not found`, 404);
+		}
+
+		await this._update({"id": userId}, {[fieldName]: fieldValue});
+    }
+
     /**
      * Получает пользователей по yandex id
      * @return {Promise.<Object[]>}
@@ -42,9 +66,14 @@ class Users extends DbModel {
 
     /**
      * Удаление пользователей
-     */
-    static async remove() {
-        throw new ApplicationError('Transaction can\'t be removed', 400);
+	 * @param {Number} id идентификатор пользователя
+	 */
+    static async remove(userId) {
+		const user = await this.getById(userId);
+		if (!user) {
+			throw new ApplicationError(`User with ID=${userId} not found`, 404);
+		}
+		await this._remove(userId);
     }
 }
 
