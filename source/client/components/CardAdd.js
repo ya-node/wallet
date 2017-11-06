@@ -228,8 +228,23 @@ class CardAdd extends Component {
 			});
 	}
 
+	/**
+	 * Спрятать модальное окно добавления новой карты
+	 */
+	hideCardModal() {
+		const {hideCardModal} = this.props;
+
+		const successMessage = '';
+		const errorMessage = '';
+		const cardNumber = '';
+
+		hideCardModal();
+
+		this.setState({successMessage, errorMessage, cardNumber});
+	}
+
 	render() {
-		const {isCardAdding, hideCardModal} = this.props;
+		const {isCardAdding} = this.props;
 		const {cardNumber, userId, isLoading, successMessage, errorMessage} = this.state;
 
 		if (isCardAdding) {
@@ -237,7 +252,7 @@ class CardAdd extends Component {
 				<Layout>
 					<Wrapper>
 						<Container>
-							<Close onClick={hideCardModal} />
+							<Close onClick={() => this.hideCardModal()} />
 
 							<Preview>
 								<CardImg src='/assets/credit-card.svg' />

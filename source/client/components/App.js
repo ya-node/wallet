@@ -189,7 +189,7 @@ class App extends Component {
 	}
 
 	/**
-	 * Спрятать модальное окно для добавления новой карты
+	 * Спрятать модальное окно добавления новой карты
 	 */
 	hideCardModal() {
 		this.setState({isCardAdding: false});
