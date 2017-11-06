@@ -238,7 +238,6 @@ class App extends Component {
 			isCardAdding,
 			isOperationConfirm,
 			removeCardId,
-			removeCardId,
 			startDate,
 			endDate
 		} = this.state;
