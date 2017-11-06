@@ -190,7 +190,8 @@ const listenCallback = function() {
 	logger.info(`Application started on ${port}`);
 };
 
-const LISTEN_PORT = config.get('server.port') || 3000;
+const LISTEN_PORT = process.env.PORT ? process.env.PORT :
+	config.get('server.port') ? config.get('server.port') : 3000;
 
 if (!module.parent && config.get('isHttps')) {
 	const protocolSecrets = {
