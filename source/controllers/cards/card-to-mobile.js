@@ -18,6 +18,15 @@ module.exports = async (ctx) => {
 		sum
 	});
 
+	const user = await ctx.usersModel.getById(ctx.session.passport.user);
+
+	if (user && user.chatID) {
+		ctx.bot.send('message', {
+			chatID: user.chatID,
+			message: `Успешное пополненние баланса мобильного телефона ${phoneNumber} на сумму ${sum} рублей`
+		});
+	}
+
 	ctx.status = 200;
 	ctx.body = transaction;
 };

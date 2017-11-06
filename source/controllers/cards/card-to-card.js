@@ -22,6 +22,16 @@ module.exports = async (ctx) => {
 		sum
 	});
 
+	const user = await ctx.usersModel.getById(ctx.session.passport.user);
+
+	if (user && user.chatID) {
+		ctx.bot.send('message', {
+			chatID: user.chatID,
+			message: `Проведен перевод суммы с карты ${sourceCard} на карту ${targetCard} в размере ${sum}`
+		});
+	}
+
+
 	ctx.status = 200;
 	ctx.body = transaction;
 };
