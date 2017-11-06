@@ -98,7 +98,9 @@ class App extends Component {
 			removeCardId: 0,
 			isCardRemoving: false,
 			isCardAdding: false,
-			isCardsEditable: false
+			isCardsEditable: false,
+			startDate: '',
+			endDate: '',
 		};
 	}
 
@@ -126,7 +128,7 @@ class App extends Component {
 	/**
 	* Функция вызывает при успешной транзакции
 	*/
-	onTransaction() {
+	onTransaction(value) {
 		axios.get('/cards').then(({data}) => {
 			const cardsList = App.prepareCardsData(data);
 			this.setState({cardsList});
@@ -136,6 +138,12 @@ class App extends Component {
 				this.setState({cardHistory});
 			});
 		});
+
+		if (value) {
+			const startDate = value[0];
+			const endDate = value[1];
+			this.setState({startDate, endDate});
+		}
 	}
 
 	/**
@@ -210,7 +218,9 @@ class App extends Component {
 			isCardsEditable,
 			isCardRemoving,
 			isCardAdding,
-			removeCardId
+			removeCardId,
+			startDate,
+			endDate
 		} = this.state;
 
 		const activeCard = cardsList[activeCardIndex] || 0;
@@ -261,7 +271,13 @@ class App extends Component {
 				<CardPane>
 					<Header activeCard={activeCard} user={data.user} />
 					<Workspace>
-						<History cardHistory={filteredHistory} />
+						<History
+							cardHistory={filteredHistory}
+							activeCard={activeCard}
+							startDate={startDate}
+							endDate={endDate}
+							onTransaction={(value) => this.onTransaction(value)}
+						/>
 						{prepaid}
 						{mobilepayment}
 						{withdraw}
