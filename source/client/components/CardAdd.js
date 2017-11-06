@@ -4,6 +4,8 @@ import styled from 'emotion/react';
 import axios from 'axios';
 import {Input, Button} from './';
 
+import randomInteger from '../../../libs/randomInteger';
+
 const Layout = styled.div`
 	position: fixed;
 	display: block;
@@ -97,18 +99,20 @@ const NumInput = styled(Input)`
 	background-size: 30px auto;
 `;
 
-const BalanceInput = styled(Input)`
-	display: block;
-	width: 50%;
-	height: 40px;
-	margin-bottom: 30px;
-	color: '#000';
-	border-color: #DCDCDC;
-	background-color: #FFFFFF;
-`;
-
 const UserInput = styled.input`
 
+`;
+
+const Preloader = styled.div`
+	position: relative;
+	display: block;
+	width: 56px;
+	height: 56px;
+	margin: 0 auto;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwcHgiICBoZWlnaHQ9IjIwMHB4IiAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ieE1pZFlNaWQiIGNsYXNzPSJsZHMtcm9sbGluZyIgc3R5bGU9ImJhY2tncm91bmQ6IG5vbmU7Ij4gICAgPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgZmlsbD0ibm9uZSIgbmctYXR0ci1zdHJva2U9Int7Y29uZmlnLmNvbG9yfX0iIG5nLWF0dHItc3Ryb2tlLXdpZHRoPSJ7e2NvbmZpZy53aWR0aH19IiBuZy1hdHRyLXI9Int7Y29uZmlnLnJhZGl1c319IiBuZy1hdHRyLXN0cm9rZS1kYXNoYXJyYXk9Int7Y29uZmlnLmRhc2hhcnJheX19IiBzdHJva2U9IiNmYzAiIHN0cm9rZS13aWR0aD0iNSIgcj0iMzUiIHN0cm9rZS1kYXNoYXJyYXk9IjE2NC45MzM2MTQzMTM0NjQxNSA1Ni45Nzc4NzE0Mzc4MjEzOCIgdHJhbnNmb3JtPSJyb3RhdGUoNy45OTk5OSA1MCA1MCkiPiAgICAgIDxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgdHlwZT0icm90YXRlIiBjYWxjTW9kZT0ibGluZWFyIiB2YWx1ZXM9IjAgNTAgNTA7MzYwIDUwIDUwIiBrZXlUaW1lcz0iMDsxIiBkdXI9IjEuNXMiIGJlZ2luPSIwcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiPjwvYW5pbWF0ZVRyYW5zZm9ybT4gICAgPC9jaXJjbGU+ICA8L3N2Zz4=);
+	background-size: 40px 40px;
 `;
 
 const Submit = styled(Button)`
@@ -136,6 +140,19 @@ const Submit = styled(Button)`
 	}
 `;
 
+const resultMessage = styled.div`
+	padding-top: 10px;
+	font-size: 16px;
+`;
+
+const Success = styled(resultMessage)`
+	color: #29af5f;
+`;
+
+const Error = styled(resultMessage)`
+	color: #FC4F4E;
+`;
+
 /**
  * Компонент CardAdd
  */
@@ -149,8 +166,10 @@ class CardAdd extends Component {
 
 		this.state = {
 			cardNumber: '',
-			balance: '',
-			userId: props.user.id
+			userId: props.user.id,
+			isLoading: false,
+			successMessage: '',
+			errorMessage: ''
 		};
 	}
 
@@ -179,21 +198,39 @@ class CardAdd extends Component {
 			event.preventDefault();
 		}
 
-		const {cardNumber, balance, userId} = this.state;
+		const {addCard} = this.props;
+		const {cardNumber, userId} = this.state;
+		const balance = randomInteger(1000, 6000);
+
+		this.setState({isLoading: true, successMessage: '', errorMessage: ''});
 
 		axios
 			.post('/cards/', {cardNumber, balance, userId})
 			.then((response) => {
-				console.log('response', response);
+				const {data} = response;
+				const successMessage = 'Карта успешно добавлена!';
+				const cardNumber = '';
+
+				addCard(data);
+
+				this.setState({isLoading: false, successMessage, cardNumber});
 			})
 			.catch((error) => {
-				console.log('error', error);
+				const {response} = error;
+				const status = response.status || 500;
+				let errorMessage = 'Ошибка. Попробуйте еще раз.';
+
+				if (status === 400) {
+					errorMessage = 'Ошибка. Неверный номер карты.';
+				}
+
+				this.setState({isLoading: false, errorMessage});
 			});
 	}
 
 	render() {
 		const {isCardAdding, hideCardModal} = this.props;
-		const {cardNumber, balance, userId} = this.state;
+		const {cardNumber, userId, isLoading, successMessage, errorMessage} = this.state;
 
 		if (isCardAdding) {
 			return (
@@ -213,17 +250,15 @@ class CardAdd extends Component {
 									name='cardNumber'
 									placeholder='Номер карты'
 									value={cardNumber}
-									onChange={(event) => this.onChangeInputValue(event)} />
-
-								<BalanceInput
-									name='balance'
-									placeholder='Баланс карты'
-									value={balance}
-									onChange={(event) => this.onChangeInputValue(event)} />
+									onChange={(event) => this.onChangeInputValue(event)}
+									disabled={isLoading} />
 
 								<UserInput type='hidden' name='userId' value={userId} />
 
-								<Submit type='submit'>Добавить карту</Submit>
+								{isLoading && <Preloader />}
+								{!isLoading && <Submit type='submit'>Добавить карту</Submit>}
+								{successMessage && <Success>{successMessage}</Success>}
+								{errorMessage && <Error>{errorMessage}</Error>}
 							</Form>
 						</Container>
 					</Wrapper>
@@ -238,7 +273,8 @@ class CardAdd extends Component {
 CardAdd.propTypes = {
 	user: PropTypes.object.isRequired,
 	isCardAdding: PropTypes.bool.isRequired,
-	hideCardModal: PropTypes.func.isRequired
+	hideCardModal: PropTypes.func.isRequired,
+	addCard: PropTypes.func.isRequired
 };
 
 export default CardAdd;

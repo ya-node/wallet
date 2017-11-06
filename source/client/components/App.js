@@ -166,8 +166,19 @@ class App extends Component {
 			});
 	}
 
-	addCard() {
-		console.log('Add card');
+	/**
+	 * Добавление новой карты
+	 * @param {Object} data
+	 */
+	addCard(data) {
+		const card = App.prepareCardsData([data]);
+		const {cardsList} = this.state;
+		const newCardsList = [
+			...cardsList,
+			...card
+		];
+
+		this.setState({cardsList: newCardsList});
 	}
 
 	/**
@@ -256,7 +267,11 @@ class App extends Component {
 						{withdraw}
 					</Workspace>
 				</CardPane>
-				<CardAdd isCardAdding={isCardAdding} hideCardModal={() => this.hideCardModal()} user={data.user} />
+				<CardAdd
+					isCardAdding={isCardAdding}
+					hideCardModal={() => this.hideCardModal()}
+					user={data.user}
+					addCard={(newCard) => this.addCard(newCard)} />
 			</Wallet>
 		);
 	}
