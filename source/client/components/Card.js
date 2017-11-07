@@ -26,7 +26,7 @@ const CardLogo = styled.div`
 const CardNumber = styled.div`
 	margin-bottom: 20px;
 	color: ${({active, textColor}) => (active ? textColor : 'rgba(255, 255, 255, 0.6)')};
-	font-size: 16px;
+	font-size: 15px;
 	font-family: 'OCR A Std Regular';
 `;
 
