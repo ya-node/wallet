@@ -78,8 +78,8 @@ app.use(session({}, app));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new YandexStrategy({
-	clientID: "1c74c610b26045a7af6a9242a2fe0cb7",
-	clientSecret: "78778830460146448e7f9e510f1da1c8",
+	clientID: process.env.NODE_ENV === 'production' ? config.get('auth.prod.clientID') : config.get('auth.dev.clientID'),
+	clientSecret: process.env.NODE_ENV === 'production' ? config.get('auth.prod.clientSecret') : config.get('auth.dev.clientSecret'),
 	//callbackURL:  "https://localhost:3000/auth",
 	//passReqToCallback: true
 }, async function (accessToken, refreshToken, profile, next) {
