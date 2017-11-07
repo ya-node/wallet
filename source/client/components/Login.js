@@ -109,6 +109,9 @@ class Login extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
+		const clientId = (process.env.NODE_ENV === 'production') ? 'b4570521646841fc9afa4bef1172b9b5' : '1c74c610b26045a7af6a9242a2fe0cb7';
+		const authEndPoint = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}`;
+
 		return (
 			<Layout>
 				<Wrapper>
@@ -118,10 +121,7 @@ class Login extends Component {
 						<Box>
 							<Title>Зарегистрируйтесь, <br />чтобы воспользоваться приложением</Title>
 
-							<Button
-								href='https://oauth.yandex.ru/authorize?response_type=code&client_id=1c74c610b26045a7af6a9242a2fe0cb7'>Войти
-								через Яндекс
-							</Button>
+							<Button href={authEndPoint}>Войти через Яндекс</Button>
 						</Box>
 
 						<Footer>Yamoney Node School</Footer>
