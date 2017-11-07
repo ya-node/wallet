@@ -12,6 +12,14 @@ const Transaction = mongoose.model('Transaction', {
   id: {
     type: Number,
     required: true
+  },
+  pending: {
+    type: Boolean,
+    required: false
+  },
+  code: {
+    type: String,
+    required: false
   }
 });
 

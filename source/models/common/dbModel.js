@@ -35,6 +35,38 @@ class DbModel extends Model {
 		return data;
 	}
 
+	async getAllFromUser(id) {
+		const data = await this._MongooseModel
+			.find({userId: id})
+			.lean()
+			.exec();
+		return data;
+	}
+
+	async getByWithFields(cond, fields) {
+		const data = await this._MongooseModel
+			.findOne(cond, fields)
+			.lean()
+			.exec();
+		return data;
+	}
+
+	async getCursorBy(cond, fields) {
+		const data = await this._MongooseModel
+			.find(cond, fields)
+			.lean()
+			.cursor();
+		return data;
+	}
+
+	async getFieldsBy(cond, fields) {
+		const data = await this._MongooseModel
+			.find(cond, fields)
+			.lean()
+			.exec();
+		return data;
+	}
+
 	/**
 	 * Генерирует новый id для записи
 	 * @return {Number}

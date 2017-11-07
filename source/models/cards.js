@@ -18,14 +18,23 @@ class Cards extends DbModel {
 	async create(card) {
 		const isDataValid = card
 			&& Object.prototype.hasOwnProperty.call(card, 'cardNumber')
-			&& Object.prototype.hasOwnProperty.call(card, 'balance');
+			&& Object.prototype.hasOwnProperty.call(card, 'balance')
+			&& Object.prototype.hasOwnProperty.call(card, 'userId');
 
 		if (isDataValid) {
 			const newCard = Object.assign({}, card, {
 				id: await this._generateId()
 			});
 
-			await this._insert(newCard);
+			try {
+				await this._insert(newCard);
+			} catch (error) {
+				const status = error.name === 'ValidationError' ? 400 : 500;
+				const message = error.message ? error.message : 'Can not create new card';
+
+				throw new ApplicationError(message, status);
+			}
+
 			return newCard;
 		}
 

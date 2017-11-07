@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
-import {Select, CardEdit} from './';
+import {CardEdit, Select} from './';
 
 const CardLayout = styled.div`
 	position: relative;
@@ -26,7 +26,7 @@ const CardLogo = styled.div`
 const CardNumber = styled.div`
 	margin-bottom: 20px;
 	color: ${({active, textColor}) => (active ? textColor : 'rgba(255, 255, 255, 0.6)')};
-	font-size: 16px;
+	font-size: 15px;
 	font-family: 'OCR A Std Regular';
 `;
 
@@ -46,6 +46,12 @@ const NewCardLayout = styled(CardLayout)`
 	background-position: center;
 	box-sizing: border-box;
 	border: 2px dashed rgba(255, 255, 255, 0.2);
+	cursor: pointer;
+	transition: border-color .2s ease;
+	
+	&:hover {
+		border-color: rgba(255, 255, 255, .8);
+	}
 `;
 
 const CardSelect = styled(Select)`
@@ -86,10 +92,10 @@ class Card extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {data, type, active, isSingle, onClick, isCardsEditable, onChangeBarMode} = this.props;
+		const {data, type, active, isSingle, onClick, isCardsEditable, onChangeBarMode, showCardModal} = this.props;
 		if (type === 'new') {
 			return (
-				<NewCardLayout />
+				<NewCardLayout onClick={() => showCardModal()} />
 			);
 		}
 
@@ -143,7 +149,8 @@ Card.propTypes = {
 	isSingle: PropTypes.bool,
 	isCardsEditable: PropTypes.bool,
 	onClick: PropTypes.func,
-	onChangeBarMode: PropTypes.func
+	onChangeBarMode: PropTypes.func,
+	showCardModal: PropTypes.func
 };
 
 export default Card;

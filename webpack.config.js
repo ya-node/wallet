@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 function getExternals() {
@@ -38,9 +39,13 @@ module.exports = [
 			path: path.resolve(__dirname, 'public')
 		},
 		plugins: [
-			new ExtractTextPlugin('[name].css')
-		],
-		watch: true
+			new ExtractTextPlugin('[name].css'),
+			new webpack.DefinePlugin({
+				'process.env': {
+					'NODE_ENV': JSON.stringify(process.env.environment),
+				}
+			})
+		]
 	},
 	{
 		entry: {
@@ -66,6 +71,12 @@ module.exports = [
 			path: path.resolve(__dirname, 'source/views'),
 			libraryTarget: 'umd'
 		},
-		watch: true
+		plugins: [
+			new webpack.DefinePlugin({
+				'process.env': {
+					'NODE_ENV': JSON.stringify(process.env.environment),
+				}
+			})
+		]
 	}
 ];

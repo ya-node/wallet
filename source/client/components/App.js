@@ -1,17 +1,12 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 import {injectGlobal} from 'emotion';
 import CardInfo from 'card-info';
 import axios from 'axios';
 
-import {
-	CardsBar,
-	Header,
-	History,
-	Prepaid,
-	MobilePayment,
-	Withdraw
-} from './';
+import {CardsBar, Header, History, MobilePayment, Prepaid, Withdraw, Login, CardAdd} from './';
+import ConfirmOperation from './ConfirmOperation';
 
 import './fonts.css';
 
@@ -29,6 +24,7 @@ injectGlobal([`
 `]);
 
 const Wallet = styled.div`
+	position: relative;
 	display: flex;
 	min-height: 100%;
 	background-color: #fcfcfc;
@@ -56,6 +52,7 @@ class App extends Component {
 	 * @returns {Object[]}
 	 */
 	static prepareCardsData(cards) {
+		if (!cards) return [];
 		return cards.map((card) => {
 			const cardInfo = new CardInfo(card.cardNumber, {
 				banksLogosPath: '/assets/',
@@ -101,7 +98,12 @@ class App extends Component {
 			activeCardIndex: 0,
 			removeCardId: 0,
 			isCardRemoving: false,
-			isCardsEditable: false
+			isCardAdding: false,
+			isCardsEditable: false,
+			isOperationConfirm: false,
+			transaction: {},
+			startDate: '',
+			endDate: ''
 		};
 	}
 
@@ -129,7 +131,7 @@ class App extends Component {
 	/**
 	* Функция вызывает при успешной транзакции
 	*/
-	onTransaction() {
+	onTransaction(value) {
 		axios.get('/cards').then(({data}) => {
 			const cardsList = App.prepareCardsData(data);
 			this.setState({cardsList});
@@ -139,6 +141,12 @@ class App extends Component {
 				this.setState({cardHistory});
 			});
 		});
+
+		if (value) {
+			const startDate = value[0];
+			const endDate = value[1];
+			this.setState({startDate, endDate});
+		}
 	}
 
 	/**
@@ -164,9 +172,52 @@ class App extends Component {
 			.then(() => {
 				axios.get('/cards').then(({data}) => {
 					const cardsList = App.prepareCardsData(data);
-					this.setState({cardsList});
+					this.setState({cardsList, activeCardIndex: 0});
 				});
 			});
+	}
+
+	/**
+	 * Добавление новой карты
+	 * @param {Object} data
+	 */
+	addCard(data) {
+		const card = App.prepareCardsData([data]);
+		const {cardsList} = this.state;
+		const newCardsList = [
+			...cardsList,
+			...card
+		];
+
+		this.setState({cardsList: newCardsList});
+	}
+
+	/**
+	 * Показать модальное окно для добавления новой карты
+	 */
+	showCardModal() {
+		this.setState({isCardAdding: true});
+	}
+
+	/**
+	 * Спрятать модальное окно добавления новой карты
+	 */
+	hideCardModal() {
+		this.setState({isCardAdding: false});
+	}
+
+	/**
+	 * Показать модальное окно для подверждения операции
+	 */
+	showOperationConfirmModal(data) {
+		this.setState({isOperationConfirm: true, transaction: data});
+	}
+
+	/**
+	 * Спрятать модальное окно для подверждения операции
+	 */
+	hideOperationConfirmModal() {
+		this.setState({isOperationConfirm: false});
 	}
 
 	/**
@@ -176,13 +227,55 @@ class App extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {cardsList, activeCardIndex, cardHistory, isCardsEditable, isCardRemoving, removeCardId} = this.state;
-		const activeCard = cardsList[activeCardIndex];
+		const {data} = this.props;
+		const {
+			transaction,
+			cardsList,
+			activeCardIndex,
+			cardHistory,
+			isCardsEditable,
+			isCardRemoving,
+			isCardAdding,
+			isOperationConfirm,
+			removeCardId,
+			startDate,
+			endDate
+		} = this.state;
+
+		const activeCard = cardsList[activeCardIndex] || 0;
 
 		const inactiveCardsList = cardsList.filter((card, index) => (index === activeCardIndex ? false : card));
 		const filteredHistory = cardHistory.filter((data) => {
 			return Number(data.cardId) == activeCard.id;
 		});
+
+		if (!data.user.isAuthorized) {
+			return (
+				<Login />
+			);
+		}
+
+		let prepaid,
+			mobilepayment,
+			withdraw;
+
+		if (cardsList.length) {
+			mobilepayment = <MobilePayment
+				activeCard={activeCard}
+				showOperationConfirmModal={(data) => this.showOperationConfirmModal(data)}
+				onTransaction={() => this.onTransaction()} />;
+		}
+		if (cardsList.length > 1) {
+			prepaid = <Prepaid
+				activeCard={activeCard}
+				inactiveCardsList={inactiveCardsList}
+				onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
+				onTransaction={() => this.onTransaction()} />;
+			withdraw = <Withdraw
+				activeCard={activeCard}
+				inactiveCardsList={inactiveCardsList}
+				onTransaction={() => this.onTransaction()} />;
+		}
 
 		return (
 			<Wallet>
@@ -194,26 +287,47 @@ class App extends Component {
 					isCardsEditable={isCardsEditable}
 					isCardRemoving={isCardRemoving}
 					deleteCard={(index) => this.deleteCard(index)}
+					addCard={() => this.addCard()}
+					showCardModal={() => this.showCardModal()}
 					onChangeBarMode={(event, index) => this.onChangeBarMode(event, index)} />
 				<CardPane>
-					<Header activeCard={activeCard} />
+					<Header activeCard={activeCard} user={data.user} deleteCard={(cardId) => this.deleteCard(cardId)} />
 					<Workspace>
-						<History cardHistory={filteredHistory} />
-						<Prepaid
+						<History
+							cardHistory={filteredHistory}
 							activeCard={activeCard}
-							inactiveCardsList={inactiveCardsList}
-							onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
-							onTransaction={() => this.onTransaction()} />
-						<MobilePayment activeCard={activeCard} onTransaction={() => this.onTransaction()} />
-						<Withdraw
-							activeCard={activeCard}
-							inactiveCardsList={inactiveCardsList}
-							onTransaction={() => this.onTransaction()} />
+							startDate={startDate}
+							endDate={endDate}
+							onTransaction={(value) => this.onTransaction(value)}
+						/>
+						{prepaid}
+						{mobilepayment}
+						{withdraw}
 					</Workspace>
 				</CardPane>
+				<CardAdd
+					isCardAdding={isCardAdding}
+					hideCardModal={() => this.hideCardModal()}
+					user={data.user}
+					addCard={(newCard) => this.addCard(newCard)} />
+				<ConfirmOperation
+					transaction={transaction}
+					isOperationConfirm={isOperationConfirm}
+					hideModal={() => this.hideOperationConfirmModal()}
+					user={data.user} />
 			</Wallet>
 		);
 	}
 }
+
+App.propTypes = {
+	data: PropTypes.shape({
+		user: PropTypes.object
+	})
+};
+
+App.defaultProps = {
+	data: {}
+};
 
 export default App;
