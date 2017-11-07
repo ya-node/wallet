@@ -92,41 +92,44 @@ const Footer = styled.footer`
  * Компонент Login
  */
 class Login extends Component {
-    /**
-     * Конструктор
-     * @param {Object} props свойства компонента Login
-     */
-    constructor(props) {
-        super(props);
+	/**
+	 * Конструктор
+	 * @param {Object} props свойства компонента Login
+	 */
+	constructor(props) {
+		super(props);
 
-        this.state = {};
-    }
+		this.state = {};
+	}
 
-    /**
-     * Рендер компонента
-     *
-     * @override
-     * @returns {JSX}
-     */
-    render() {
-        return (
-        <Layout>
-        <Wrapper>
-        <Container>
-        <Logo />
+	/**
+	 * Рендер компонента
+	 *
+	 * @override
+	 * @returns {JSX}
+	 */
+	render() {
+		const clientId = (process.env.NODE_ENV === 'production') ? 'b4570521646841fc9afa4bef1172b9b5' : '1c74c610b26045a7af6a9242a2fe0cb7';
+		const authEndPoint = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}`;
 
-        <Box>
-        <Title>Зарегистрируйтесь, <br />чтобы воспользоваться приложением</Title>
+		return (
+			<Layout>
+				<Wrapper>
+					<Container>
+						<Logo />
 
-        <Button href='https://oauth.yandex.ru/authorize?response_type=code&client_id=1c74c610b26045a7af6a9242a2fe0cb7'>Войти через Яндекс</Button>
-        </Box>
+						<Box>
+							<Title>Зарегистрируйтесь, <br />чтобы воспользоваться приложением</Title>
 
-        <Footer>Yamoney Node School</Footer>
-        </Container>
-        </Wrapper>
-        </Layout>
-    );
-    }
+							<Button href={authEndPoint}>Войти через Яндекс</Button>
+						</Box>
+
+						<Footer>Yamoney Node School</Footer>
+					</Container>
+				</Wrapper>
+			</Layout>
+		);
+	}
 }
 
 export default Login;

@@ -8,5 +8,15 @@
   "telegramBot": {
   	"token": "470709209:AAG3e4UBTAmtbafwK2PMt3oBhpjOT6EMjik"
   },
-  "isHttps": false
+  "isHttps": false,
+  "auth": {
+	"dev": {
+	  "clientID": "1c74c610b26045a7af6a9242a2fe0cb7",
+	  "clientSecret": "78778830460146448e7f9e510f1da1c8"
+	},
+	"prod": {
+	  "clientID": "b4570521646841fc9afa4bef1172b9b5",
+	  "clientSecret": "2cae4be41a274af4867dfb39672996d1"
+	}
+  }
 }

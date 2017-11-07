@@ -5,7 +5,7 @@
   "author": "",
   "scripts": {
 	"postinstall": "npm run build",
-    "build": "webpack",
+    "build": "environment=production webpack",
     "build:dev": "webpack --watch",
     "tls:generate": "scripts/tls/generate.sh",
     "start": "NODE_PATH=. node ./source/app.js",
