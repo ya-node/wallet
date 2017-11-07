@@ -92,41 +92,44 @@ const Footer = styled.footer`
  * Компонент Login
  */
 class Login extends Component {
-    /**
-     * Конструктор
-     * @param {Object} props свойства компонента Login
-     */
-    constructor(props) {
-        super(props);
+	/**
+	 * Конструктор
+	 * @param {Object} props свойства компонента Login
+	 */
+	constructor(props) {
+		super(props);
 
-        this.state = {};
-    }
+		this.state = {};
+	}
 
-    /**
-     * Рендер компонента
-     *
-     * @override
-     * @returns {JSX}
-     */
-    render() {
-        return (
-        <Layout>
-        <Wrapper>
-        <Container>
-        <Logo />
+	/**
+	 * Рендер компонента
+	 *
+	 * @override
+	 * @returns {JSX}
+	 */
+	render() {
+		return (
+			<Layout>
+				<Wrapper>
+					<Container>
+						<Logo />
 
-        <Box>
-        <Title>Зарегистрируйтесь, <br />чтобы воспользоваться приложением</Title>
+						<Box>
+							<Title>Зарегистрируйтесь, <br />чтобы воспользоваться приложением</Title>
 
-        <Button href='https://oauth.yandex.ru/authorize?response_type=code&client_id=1c74c610b26045a7af6a9242a2fe0cb7'>Войти через Яндекс</Button>
-        </Box>
+							<Button
+								href='https://oauth.yandex.ru/authorize?response_type=code&client_id=1c74c610b26045a7af6a9242a2fe0cb7'>Войти
+								через Яндекс
+							</Button>
+						</Box>
 
-        <Footer>Yamoney Node School</Footer>
-        </Container>
-        </Wrapper>
-        </Layout>
-    );
-    }
+						<Footer>Yamoney Node School</Footer>
+					</Container>
+				</Wrapper>
+			</Layout>
+		);
+	}
 }
 
 export default Login;
