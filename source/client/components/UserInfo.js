@@ -39,7 +39,7 @@ const UserInfo = ({user}) => {
 		axios.get(`/bot/${user.id}`)
 		.then((response) => {
 			const {userId, token, botName} = response.data;
-			alert(`Для того, чтобы привязать Telegram бота, отправте ${botName} код подтверждения: ${token}`);
+			alert(`Для того, чтобы привязать Telegram бота, отправьте ${botName} код подтверждения: ${token}`);
 		})
 		.catch((err) => {
 			alert(`К сожалению данный сервис временно недоступен.`);
